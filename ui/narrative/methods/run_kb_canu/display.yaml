@@ -1,0 +1,151 @@
+---
+name: Assemble with Canu - v2.2
+tooltip: |
+    Assemble long reads (Oxford Nanopore, PacBio CLR, or PacBio HiFi/CCS)
+    using the Canu assembler. Canu is designed for high-noise single-molecule
+    sequencing and performs three-stage assembly: correction, trimming, and
+    unitig construction.
+screenshots: []
+
+icon: canu.png
+
+suggestions:
+    apps:
+        related: []
+        next: []
+    methods:
+        related: []
+        next: []
+
+description: |
+    <p>
+        <b>Canu</b> is a fork of the Celera Assembler, designed for
+        high-noise single-molecule sequencing data from PacBio RS II/Sequel,
+        PacBio HiFi/CCS, and Oxford Nanopore instruments.
+    </p>
+    <p>
+        Canu runs in three stages:
+        <ol>
+            <li><b>Correct</b> — reads are corrected using overlaps to consensus</li>
+            <li><b>Trim</b> — corrected reads are trimmed to remove low-quality ends</li>
+            <li><b>Assemble</b> — trimmed reads are assembled into contigs/unitigs</li>
+        </ol>
+    </p>
+    <p>
+        For PacBio HiFi data, Canu skips the correction stage and assembles
+        directly, as HiFi reads are already highly accurate (&gt;99.9%).
+    </p>
+    <p>
+        <b>References:</b><br/>
+        Koren <i>et al.</i> (2017) Canu: scalable and accurate long-read assembly via
+        adaptive k-mer weighting and repeat separation. <i>Genome Research</i>.
+        <a href="https://doi.org/10.1101/gr.215087.116">doi:10.1101/gr.215087.116</a>
+    </p>
+
+publications:
+    -
+        display-text: |
+            Koren S, Walenz BP, Berlin K, Miller JR, Bergman NH, Phillippy AM. (2017)
+            Canu: scalable and accurate long-read assembly via adaptive k-mer weighting
+            and repeat separation. Genome Research, 27(5):722-736.
+        link: https://doi.org/10.1101/gr.215087.116
+
+parameters:
+    reads_ref:
+        ui-name: |
+            Read Library or Read Set
+        short-hint: |
+            Long-read library (Oxford Nanopore or PacBio). Accepts a
+            SingleEndLibrary, PairedEndLibrary, or ReadsSet object.
+        long-hint: |
+            Select the long-read library or read set to assemble. The read
+            type must match the sequencing platform selected below.
+
+    read_type:
+        ui-name: |
+            Read Type / Sequencing Platform
+        short-hint: |
+            Sequencing platform that produced the reads.
+        long-hint: |
+            <ul>
+                <li><b>Oxford Nanopore (raw)</b> — Raw ONT reads from MinION, GridION, PromethION, etc.</li>
+                <li><b>PacBio HiFi / CCS</b> — High-accuracy circular consensus sequences (&gt;99%). Recommended for most PacBio Sequel II data. Canu uses the <code>-pacbio-hifi</code> flag.</li>
+                <li><b>PacBio CLR</b> — Continuous long reads (raw, uncorrected). Uses the <code>-pacbio-raw</code> flag.</li>
+            </ul>
+
+    genome_size:
+        ui-name: |
+            Estimated Genome Size
+        short-hint: |
+            Approximate size of the target genome, e.g. 5m, 2.4g, 500k.
+        long-hint: |
+            Canu uses the genome size to estimate sequencing coverage and
+            configure job sizes. Use SI suffixes: <b>k</b> (kilobases),
+            <b>m</b> (megabases), or <b>g</b> (gigabases).
+            Examples: <code>5m</code>, <code>2.4g</code>, <code>500k</code>.
+
+    output_assembly_name:
+        ui-name: |
+            Output Assembly Name
+        short-hint: |
+            Name for the output Assembly object saved to your Narrative.
+
+    min_read_length:
+        ui-name: |
+            Minimum Read Length (bp)
+        short-hint: |
+            Discard reads shorter than this value. Default: 1000 bp.
+        long-hint: |
+            Reads shorter than this threshold are excluded from the assembly.
+            Very short reads contribute little to assembly contiguity and can
+            increase run time. The default of 1000 bp is suitable for most
+            datasets.
+
+    corrected_error_rate:
+        ui-name: |
+            Corrected Error Rate
+        short-hint: |
+            Expected error rate in corrected reads. Leave blank to use Canu defaults
+            (0.045 for PacBio, 0.144 for Nanopore).
+        long-hint: |
+            Controls the allowed difference between overlapping corrected reads.
+            Lower values produce more accurate but more fragmented assemblies.
+            Increase slightly (e.g. to 0.105 for PacBio or 0.16 for Nanopore)
+            when assembling low-coverage datasets (&lt;30x).
+
+    min_overlap_length:
+        ui-name: |
+            Minimum Overlap Length (bp)
+        short-hint: |
+            Overlaps shorter than this are not used. Default: 500 bp.
+
+    max_input_coverage:
+        ui-name: |
+            Maximum Input Coverage
+        short-hint: |
+            Randomly downsample input reads to this coverage. 0 = use all reads.
+        long-hint: |
+            For very high coverage datasets (&gt;100x), downsampling can
+            significantly reduce run time with minimal impact on assembly
+            quality. Set to 0 to use all reads (default).
+
+    cor_out_coverage:
+        ui-name: |
+            Corrected Read Output Coverage
+        short-hint: |
+            Coverage of corrected reads to pass to trimming/assembly. Default: 40.
+        long-hint: |
+            After correction, only the longest corrected reads up to this
+            coverage depth are used for assembly. The default of 40x is
+            appropriate for most assemblies.
+
+    fast_assembly:
+        ui-name: |
+            Fast Assembly Mode
+        short-hint: |
+            Use MHAP overlapping for all stages (faster, slightly less contiguous).
+        long-hint: |
+            Enabling fast mode uses MHAP overlapping in all three stages rather
+            than just correction. This is significantly faster but may produce
+            slightly less contiguous assemblies for large genomes (&gt;1 Gbp).
+            Recommended for Nanopore genomes &lt;1 Gbp or metagenomes.

@@ -1,0 +1,13 @@
+module-name: kb_canu
+module-description:
+    A KBase wrapper for the Canu long-read genome assembler (v2.2). Supports
+    assembly of Oxford Nanopore, PacBio CLR, and PacBio HiFi/CCS reads. Canu
+    is a fork of the Celera Assembler designed for high-noise single-molecule
+    sequencing and performs three-stage assembly correction, trimming, and
+    unitig construction.
+service-language: 
+    python
+module-version:
+    0.0.2
+owners:
+    [ac.shahnam, cashahnam, cshahnam]
